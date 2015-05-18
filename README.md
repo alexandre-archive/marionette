@@ -14,6 +14,8 @@ Marionette game using Leap Motion Controller
 - Bower
 - Gulp
 
+Required only for development, if you want to host, you can use Apache, PHP, Nginx + FastCGI or any other.
+
 ### Frontend
 
 - AngularJS
@@ -25,7 +27,7 @@ Marionette game using Leap Motion Controller
 
 ## Setup
 
-Before all, you need to install [Node.JS](https://nodejs.org/).
+Before all, you need to install [NodeJS](https://nodejs.org/).
 
 To install all dependencies run:
 
