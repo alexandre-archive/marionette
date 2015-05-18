@@ -4,9 +4,24 @@ Marionette game using Leap Motion Controller
 
 ## Requirements
 
+### Hardware
+
+- LeapMotion
+
+### Backend
+
 - Node.JS
 - Bower
 - Gulp
+
+### Frontend
+
+- AngularJS
+- Bootstrap
+- jQuery
+- Klass
+- LeapJS
+- Underscore
 
 ## Setup
 
@@ -32,7 +47,7 @@ To start Node.JS server run:
 
 `node index.js`
 
-And access [localhost:8000](http://localhost:8000)
+And access [localhost:8000](http://localhost:8000).
 
 ## License
 
