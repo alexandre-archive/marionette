@@ -1,0 +1,27 @@
+{
+  "name": "marionette",
+  "version": "0.1.0",
+  "description": "Marionette Game Using Leap Motion",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexandrevicenzi/marionette.git"
+  },
+  "keywords": [
+    "leap",
+    "game"
+  ],
+  "author": "Alexandre Vicenzi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alexandrevicenzi/marionette/issues"
+  },
+  "homepage": "https://github.com/alexandrevicenzi/marionette",
+  "devDependencies": {
+    "bower": "^1.4.1",
+    "gulp": "^3.8.11"
+  }
+}
