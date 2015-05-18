@@ -25,7 +25,7 @@ Required only for development, if you want to host, you can use Apache, PHP, Ngi
 - LeapJS
 - Underscore
 
-## Setup
+## Dev Setup
 
 Before all, you need to install [NodeJS](https://nodejs.org/).
 
@@ -45,11 +45,15 @@ TODO
 
 ## Running
 
-To start Node.JS server run:
+To start NodeJS server run:
 
 `node index.js`
 
 And access [localhost:8000](http://localhost:8000).
+
+## Hosting
+
+TODO
 
 ## License
 
