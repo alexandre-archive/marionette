@@ -23,6 +23,9 @@
     <![endif]-->
 </head>
 <body ng-controller="MarionetteController">
+
+    <canvas id="canvas"></canvas>
+<!--
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -40,7 +43,7 @@
                     <li><a href="#about">About</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
-            </div><!--/.nav-collapse -->
+            </div>
         </div>
     </nav>
     <div class="container">
@@ -52,6 +55,8 @@
             <span>Qtd dedos: <span id="fingers-length">0</span></span>
             <br>
             <span>Qtd dedos extendidos: <span id="fingers-ext-length">0</span></span>
+            <div class="hand hand-l">L</div>
+            <div class="hand hand-r">R</div>
         </div>
 
         <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pauseModal" id="pauseModal" aria-hidden="true">
@@ -69,10 +74,9 @@
             </div>
         </div>
 
-    </div><!-- /.container -->
+    </div>
 
     <footer class="footer">
-        <!-- Message alert -->
         <div class="alert alert-{{ msg.type }} alert-dismissible" ng-show="msg.type" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -80,6 +84,7 @@
             <span>{{ msg.message }}</span>
         </div>
     </footer>
+-->
 
     <!-- Replace this with Build folder -->
     <!-- Dependencies -->
@@ -88,8 +93,10 @@
     <script type="text/javascript" src="bower_components/angular/angular.js"></script>
     <script type="text/javascript" src="bower_components/leapjs/leap-0.6.4.js"></script>
     <script type="text/javascript" src="bower_components/klass/klass.js"></script>
+    <script type="text/javascript" src="bower_components/underscore/underscore.js"></script>
     <!-- Marionette files -->
     <script type="text/javascript" src="js/event-listener.js"></script>
+    <script type="text/javascript" src="js/frame-processor.js"></script>
     <script type="text/javascript" src="js/leap-listener.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
 </body>

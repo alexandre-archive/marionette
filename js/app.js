@@ -1,20 +1,4 @@
-/*
-Leap.loop(function(frame){
-        $('#hands-length').text(frame.hands.length);
 
-        var fingers = 0, fingersExt = 0;
-
-        for (var i = frame.hands.length - 1; i >= 0; i--) {
-            fingers += frame.hands[i].fingers.length;
-
-            for (var x = frame.hands[i].fingers.length - 1; x >= 0; x--) {
-                if (frame.hands[i].fingers[x].extended) fingersExt++;
-            };
-        };
-
-        $('#fingers-length').text(fingers);
-        $('#fingers-ext-length').text(fingersExt);
-});*/
 
 var Msg = {
     SUCCESS: 'success',
@@ -64,10 +48,70 @@ angular.module('MarionetteApp', []).controller('MarionetteController', function 
     });
 
     listener.on('pause', function () {
-        console.log('foi');
         $('#pauseModal').modal('show');
-    })
+    });
+
+    listener.on('resume', function () {
+        $('#pauseModal').modal('hide');
+    });
+
+    listener.on('data', function (frameProcessor) {
+        if (frameProcessor == undefined) return;
+
+        $('#hands-length').text(frameProcessor.getHandsCount());
+        $('#fingers-length').text(frameProcessor.getFingersCount());
+        $('#fingers-ext-length').text(frameProcessor.getExtendedFingersCount());
+
+        var leftHand = frameProcessor.getLeftHand(),
+            rightHand = frameProcessor.getRightHand();
+
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (leftHand) {
+            console.log('Left hand detected.');
+            var pos = frameProcessor.getScreenPosition(leftHand);
+
+            var centerX = pos.x;
+            var centerY = pos.y;
+
+
+            var radius = 7;
+
+            context.beginPath();
+            context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+            context.fillStyle = 'green';
+            context.fill();
+            context.lineWidth = 1;
+            context.strokeStyle = '#003300';
+            context.stroke();
+
+        }
+
+        if (rightHand) {
+            console.log('Right hand detected.');
+            var pos = frameProcessor.getScreenPosition(rightHand);
+
+            var centerX = pos.x;
+            var centerY = pos.y;
+            var radius = 7;
+
+            context.beginPath();
+            context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+            context.fillStyle = 'gray';
+            context.fill();
+            context.lineWidth = 1;
+            context.strokeStyle = '#003300';
+            context.stroke();
+        }
+    });
 
     listener.setup();
     listener.start();
+});
+
+$(document).ready(function () {
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
 });
