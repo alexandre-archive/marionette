@@ -20,36 +20,27 @@ var LeapListener = EventListener.extend(function (params) {
         _this.trigger('data', [new FrameProcessor({frame: frame})]);
     },
 
+    _onHandFound: function () {
+
+    },
+
+    _onHandLost: function () {
+
+    },
+
     /* Connect all events. */
     _connectEvents: function () {
         this._controller.on('frame', this._onFrame);
-        this._controller.on('connect', this._onConnect);
-        //this._controller.on('blur', function () { _self.trigger('pause'); });
-        //this._controller.on('focus', function () { _self.trigger('resume'); });
-/*
-
-
-        this._controller.on('deviceAttached', function () { console.log('deviceAttached') });
-        //this._controller.on('deviceConnected', function () { console.log('deviceConnected') });
-        //this._controller.on('deviceDisconnected', function () { console.log('deviceDisconnected') });
-        this._controller.on('deviceRemoved', function () { console.log('deviceRemoved') });
-        this._controller.on('deviceStopped', function () { console.log('deviceStopped') });
-        this._controller.on('deviceStreaming', function () { console.log('deviceStreaming') });
-        this._controller.on('disconnect', function () { console.log('disconnect') });
-        //this._controller.on('frame', function () { console.log('frame') });
-        this._controller.on('gesture', function () { console.log('gesture') });
-        //this._controller.on('frameEnd', function () { console.log('frameEnd') });
-        this._controller.on('protocol', function () { console.log('protocol') });
-        this._controller.on('streamingStarted', function () { console.log('streamingStarted') });
-        this._controller.on('streamingStopped', function () { console.log('streamingStopped') });
-        this._controller.on('connect', function () { console.log('connect') });
-
-*/
+        this._controller.on('handFound', this._onHandFound);
+        this._controller.on('handLost', this._onHandLost);
     },
 
     setup: function (params) {
         console.log('Setting up Leap Motion controller...');
         this._controller = new Leap.Controller(params);
+        // http://leapmotion.github.io/leapjs-plugins/docs/
+        this._controller.use('screenPosition');
+        this._controller.use('handEntry');
         this._connectEvents();
     },
 

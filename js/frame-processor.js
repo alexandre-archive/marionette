@@ -37,6 +37,7 @@ var FrameProcessor = klass(function (params) {
         var x = 100, y = 100, z = 100; // Center screen.
         // window.screen.availHeight
         // window.screen.availWidth
+        console.log(hand.direction);
         return new HandPosition(x, y, z);
     },
 
