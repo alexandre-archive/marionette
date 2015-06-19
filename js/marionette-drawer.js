@@ -10,7 +10,7 @@ function MarionetteDrawer(){
     this.stop = stop;
     this.play = play;
     this.addFlamingo = addFlamingo;
-    this.addCenario = addCenario;
+    this.addScenario = addScenario;
     this.removeObject = removeObject;
 
     var container, scene, camera, renderer, stats, objects, animations;
@@ -113,45 +113,30 @@ function MarionetteDrawer(){
 
     }
 
-     function addCenario(){
+     function addScenario(){
 
 
-            // FLOOR
-        /*var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
-        floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
-        floorTexture.repeat.set( 10, 10 );
-        var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
-        var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
-        var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-        floor.position.y = -0.5;
-        floor.rotation.x = Math.PI / 2;
-        scene.add(floor);*/
-        // SKYBOX/FOG
-        /*var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
-        var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
-        var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
-        scene.add(skyBox);
-        scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
-        */
 
-        var floorMaterial = new THREE.MeshBasicMaterial( { color: 0x99D9EA, side: THREE.DoubleSide } );
+        var texture = new THREE.ImageUtils.loadTexture( 'images/country.png' );
+        var material = new THREE.MeshBasicMaterial( { map: texture, side: THREE.DoubleSide } );
+        //var material = new THREE.MeshBasicMaterial( { color: 0x99D9EA, side: THREE.DoubleSide } );
         
-        var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
-        var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-        //floor.position.y = -0.5;
-        //floor.rotation.x = Math.PI / 2;
-        scene.add(floor);
-        // SKYBOX/FOG
+        var geometry = new THREE.PlaneGeometry(SCREEN_WIDTH*2, SCREEN_HEIGHT*2, 10, 10);
+        var scenario = new THREE.Mesh(geometry, material);
+        scenario.position.z = -400;
+        
+        scene.add(scenario);
+       
 
     }
 
     function addHorse(id){
 
         var loader = new THREE.JSONLoader( true );
-        loader.load( "models/horse.js", function( geometry ) {
+        loader.load( "models//horse.js", function( geometry ) {
 
             var horse = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x606060, morphTargets: true } ) );
-            horse.scale.set( 1.0, 1.0, 1.0 );
+            horse.scale.set( 0.8, 0.8, 0.8 );
             scene.add( horse );
 
             objects[id] = horse;
@@ -159,6 +144,12 @@ function MarionetteDrawer(){
             var animation = new THREE.MorphAnimation( horse );
             animation.play();
             animations[id] = animation;
+
+
+            var rotationMatrix = new THREE.Matrix4();
+            rotationMatrix.makeRotationY(calculateRad(90));
+            horse.applyMatrix(rotationMatrix);
+
 
 
         } );
@@ -178,12 +169,18 @@ function MarionetteDrawer(){
 
             meshAnim.duration = 5000;
 
-            meshAnim.scale.set( 1.5, 1.5, 1.5 );
-            meshAnim.position.y = 150;
+            meshAnim.scale.set( 1.0, 1.0, 1.0 );
+            meshAnim.position.y = 200;
 
             scene.add( meshAnim );
             objects[id] = meshAnim;
             animations[id] = meshAnim;
+
+            var rotationMatrix = new THREE.Matrix4();
+            rotationMatrix.makeRotationY(calculateRad(90));
+            meshAnim.applyMatrix(rotationMatrix);
+
+            meshAnim.position.setY(240);
 
         } );
 

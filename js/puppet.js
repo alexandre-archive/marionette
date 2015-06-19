@@ -8,7 +8,7 @@
 		
 		marionetteDrawer = new MarionetteDrawer();
 		marionetteDrawer.init(this.context.getElementById('container'));
-		marionetteDrawer.addCenario();
+		marionetteDrawer.addScenario();
 		marionetteDrawer.animate();
 
 	}
@@ -88,5 +88,23 @@
 		//marionetteDrawer.moveObject(id, x, y, z);
 	}
 
+	$.fn.addObjects = function(){
+
+
+		$('container').addObject('a', 'horse');
+
+
+		$('container').addObject('b', 'flamingo');
+				
+		
+
+	}
+
+	$.fn.organize = function(){
+									
+		$('container').moveObject('b', -200, 250,0);
+				
+		
+	}
 
 }(jQuery));	
