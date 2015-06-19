@@ -1,7 +1,5 @@
 $(document).ready(function () {
     $("#container").start();
-    $('#container').addObject('left');
-    $('#container').addObject('right');
 
     var listener = new LeapListener();
 
@@ -27,16 +25,25 @@ $(document).ready(function () {
             rightHand = frameProcessor.getRightHand();
 
         if (leftHand) {
-            console.log('Left hand detected.');
-            //var pos = frameProcessor.getScreenPosition(leftHand);
+            console.log('Left hand moving...');
             console.log(leftHand.screenPosition());
         }
 
         if (rightHand) {
-            console.log('Right hand detected.');
-            //var pos = frameProcessor.getScreenPosition(rightHand);
+            console.log('Right hand moving...');
             console.log(rightHand.screenPosition());
         }
+    });
+
+    listener.on('handFound', function (hand, type) {
+        console.log('%s hand found.', type);
+        var obj = type === 'left' ? 'horse' : 'flamingo';
+        $('#container').addObject(type, obj);
+    });
+
+    listener.on('handLost', function (hand, type) {
+        console.log('%s hand lost.', type);
+        $('#container').removeObject(type);
     });
 
     listener.setup();

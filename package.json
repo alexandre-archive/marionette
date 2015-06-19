@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/alexandrevicenzi/marionette",
   "devDependencies": {
-    "bower": "^1.4.1",
-    "gulp": "^3.8.11"
+    "bower": "^1.4.1"
   }
 }

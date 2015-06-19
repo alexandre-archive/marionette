@@ -1,9 +1,3 @@
-function HandPosition(x, y, z) {
-    this.x = x; // X axis.
-    this.y = y; // Y axis.
-    this.z = z; // Z axis.
-} 
-
 var FrameProcessor = klass(function (params) {
     this._frame = params.frame;
     _self = this;
@@ -31,14 +25,6 @@ var FrameProcessor = klass(function (params) {
 
     getRightHand: function () {
         return _.findWhere(this._frame.hands, { type: 'right' });
-    },
-
-    getScreenPosition: function(hand, screen) {
-        var x = 100, y = 100, z = 100; // Center screen.
-        // window.screen.availHeight
-        // window.screen.availWidth
-        console.log(hand.direction);
-        return new HandPosition(x, y, z);
     },
 
     getFrameRate: function () {

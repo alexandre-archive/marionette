@@ -20,12 +20,12 @@ var LeapListener = EventListener.extend(function (params) {
         _this.trigger('data', [new FrameProcessor({frame: frame})]);
     },
 
-    _onHandFound: function () {
-
+    _onHandFound: function (hand) {
+        _this.trigger('handFound', [hand, hand.type]);
     },
 
-    _onHandLost: function () {
-
+    _onHandLost: function (hand) {
+        _this.trigger('handLost', [hand, hand.type]);
     },
 
     /* Connect all events. */

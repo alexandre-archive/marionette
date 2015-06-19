@@ -1,6 +1,34 @@
-var ext = require('./ext.js').ext,
-    fs = require('fs'),
+var fs = require('fs'),
     http = require('http');
+
+var extTypes = { 
+    "bmp"   : "image/bmp",
+    "css"   : "text/css",
+    "gif"   : "image/gif",
+    "htm"   : "text/html",
+    "html"  : "text/html",
+    "ico"   : "image/vnd.microsoft.icon",
+    "jpeg"  : "image/jpeg",
+    "jpg"   : "image/jpeg",
+    "js"    : "application/javascript",
+    "json"  : "application/json",
+    "png"   : "image/png",
+    "svg"   : "image/svg+xml",
+    "svgz"  : "image/svg+xml",
+    "swf"   : "application/x-shockwave-flash",
+    "text"  : "text/plain",
+    "txt"   : "text/plain",
+    "xml"   : "application/xml"
+};
+
+function getExt(path) {
+    var i = path.lastIndexOf('.');
+    return (i < 0) ? '' : path.substr(i);
+}
+
+function getContentType(ext) {
+    return extTypes[ext.toLowerCase()] || 'application/octet-stream';
+}
 
 http.createServer(function (request, response) {
     console.log('%s %s', request.method, request.url);
@@ -24,7 +52,7 @@ http.createServer(function (request, response) {
                 } else {
                     response.writeHead(200, {
                         'Content-Length': data.length,
-                        'Content-Type': ext.getContentType(ext.getExt(fileName).substr(1)) });
+                        'Content-Type': getContentType(getExt(fileName).substr(1)) });
                     response.write(data);
                     response.end();
                 }
