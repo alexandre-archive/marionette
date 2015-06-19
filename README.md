@@ -20,8 +20,10 @@ Required only for development, if you want to host, you can use Apache, PHP, Ngi
 - jQuery
 - Klass
 - LeapJS
-- ThreeJS
 - Underscore
+- three.js
+- LeapJS Plugins
+- three.js Stats
 
 ## Dev Setup
 
