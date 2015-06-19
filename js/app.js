@@ -26,12 +26,14 @@ $(document).ready(function () {
 
         if (leftHand) {
             console.log('Left hand moving...');
-            console.log(leftHand.screenPosition());
+            var p = frameProcessor.getScreenPosition(leftHand);
+            $('#container').moveObject('left', p.x, p.y, p.z);
         }
 
         if (rightHand) {
             console.log('Right hand moving...');
-            console.log(rightHand.screenPosition());
+            var p = frameProcessor.getScreenPosition(rightHand);
+            $('#container').moveObject('right', p.x, p.y, p.z);
         }
     });
 
