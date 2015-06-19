@@ -133,7 +133,7 @@ function MarionetteDrawer(){
     function addHorse(id){
 
         var loader = new THREE.JSONLoader( true );
-        loader.load( "models//horse.js", function( geometry ) {
+        loader.load( "models//horse.json", function( geometry ) {
 
             var horse = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x606060, morphTargets: true } ) );
             horse.scale.set( 0.8, 0.8, 0.8 );
@@ -146,9 +146,9 @@ function MarionetteDrawer(){
             animations[id] = animation;
 
 
-            var rotationMatrix = new THREE.Matrix4();
+            /*var rotationMatrix = new THREE.Matrix4();
             rotationMatrix.makeRotationY(calculateRad(90));
-            horse.applyMatrix(rotationMatrix);
+            horse.applyMatrix(rotationMatrix);*/
 
 
 
@@ -159,7 +159,7 @@ function MarionetteDrawer(){
     function addFlamingo(id){
 
         var loader = new THREE.JSONLoader();
-        loader.load( "models/flamingo.js", function( geometry ) {
+        loader.load( "models/flamingo.json", function( geometry ) {
 
             morphColorsToFaceColors( geometry );
             geometry.computeMorphNormals();
@@ -176,9 +176,9 @@ function MarionetteDrawer(){
             objects[id] = meshAnim;
             animations[id] = meshAnim;
 
-            var rotationMatrix = new THREE.Matrix4();
+            /*var rotationMatrix = new THREE.Matrix4();
             rotationMatrix.makeRotationY(calculateRad(90));
-            meshAnim.applyMatrix(rotationMatrix);
+            meshAnim.applyMatrix(rotationMatrix);*/
 
             meshAnim.position.setY(240);
 
