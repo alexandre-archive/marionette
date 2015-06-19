@@ -116,7 +116,7 @@ function MarionetteDrawer() {
     }
 
     function addScenario() {
-        var texture = new THREE.ImageUtils.loadTexture('/images/country.png');
+        var texture = new THREE.ImageUtils.loadTexture('images/country.png');
         var material = new THREE.MeshBasicMaterial({
             map: texture,
             side: THREE.DoubleSide
@@ -133,7 +133,7 @@ function MarionetteDrawer() {
 
     function addHorse(id) {
         var loader = new THREE.JSONLoader(true);
-        loader.load("/models//horse.json", function(geometry) {
+        loader.load("models//horse.json", function(geometry) {
 
             var horse = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({
                 color: 0x606060,
@@ -158,7 +158,7 @@ function MarionetteDrawer() {
 
     function addFlamingo(id) {
         var loader = new THREE.JSONLoader();
-        loader.load("/models/flamingo.json", function(geometry) {
+        loader.load("models/flamingo.json", function(geometry) {
 
             morphColorsToFaceColors(geometry);
             geometry.computeMorphNormals();
