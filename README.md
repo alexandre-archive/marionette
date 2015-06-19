@@ -12,6 +12,7 @@ Marionette game using Leap Motion Controller
 
 - Node.JS
 - Bower
+- Gulp
 
 Required only for development, if you want to host, you can use Apache, PHP, Nginx + FastCGI or any other.
 
@@ -41,7 +42,7 @@ And that's it.
 
 ## Build
 
-TODO
+Run `gulp` to build everything.
 
 ## Running
 
@@ -51,9 +52,7 @@ To start NodeJS server run:
 
 And access [localhost:8000](http://localhost:8000).
 
-## Hosting
-
-TODO
+After build you can access [localhost:8000/dist/index.html](http://localhost:8000/dist/index.html).
 
 ## License
 
