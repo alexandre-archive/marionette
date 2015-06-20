@@ -16,11 +16,9 @@ gulp.task('vendor', function() {
 
 gulp.task('main', function() {
     gulp.src([
-            'js/event-listener.js',
-            'js/frame-processor.js',
-            'js/leap-listener.js',
+            'js/leap-extras.js',
+            'js/threejs-position.js',
             'js/marionette-drawer.js',
-            'js/puppet.js',
             'js/app.js'
         ])
         .pipe(plugins.concat('main.js'))
