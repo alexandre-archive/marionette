@@ -1,53 +1,50 @@
+var drawer;
+
+function moveObject(hand) {
+    if (hand && (hand.timeVisible > .25) && (hand.confidence > .7)) {
+        var pitch = hand.pitchDegree(),
+            roll = hand.rollDegree(),
+            yaw = hand.yawDegree(),
+            p = hand.get3JsScreenPosition();
+
+        drawer.moveObject(hand.type, p.x, p.y, p.z);
+        drawer.rotateObject(hand.type, pitch * -1, yaw, roll);
+    }
+}
+
 $(document).ready(function () {
-    $("#container").start();
+    drawer = new MarionetteDrawer();
+    drawer.init(document.getElementById('container'));
+    drawer.addScenario();
+    drawer.animate();
 
-    var listener = new LeapListener();
+    var controller = new Leap.Controller();
 
-    listener.on('connecting', function () {
+    controller.use('screenPosition')
+        .use('handEntry')
+        .use('threejsPosition')
+        .use('leapExtras');
+
+    controller.on('frame', function (frame) {
+        moveObject(frame.getLeftHand());
+        moveObject(frame.getRightHand());
     });
 
-    listener.on('connected', function () {
-    });
-
-    listener.on('connectionTimedout', function () {
-    });
-
-    listener.on('pause', function () {
-    });
-
-    listener.on('resume', function () {
-    });
-
-    listener.on('data', function (frameProcessor) {
-        if (frameProcessor == undefined) return;
-
-        var leftHand = frameProcessor.getLeftHand(),
-            rightHand = frameProcessor.getRightHand();
-
-        if (leftHand) {
-            console.log('Left hand moving...');
-            var p = frameProcessor.getScreenPosition(leftHand);
-            $('#container').moveObject('left', p.x, p.y, p.z);
+    controller.on('handFound', function (hand) {
+        if (hand.type === 'left') {
+            drawer.addHorse(hand.type);
+        } else if (hand.type == 'right') {
+            drawer.addFlamingo(hand.type);
+        } else {
+            drawer.addCube(hand.type);
         }
 
-        if (rightHand) {
-            console.log('Right hand moving...');
-            var p = frameProcessor.getScreenPosition(rightHand);
-            $('#container').moveObject('right', p.x, p.y, p.z);
-        }
+        drawer.moveObject(hand.type);
     });
 
-    listener.on('handFound', function (hand, type) {
-        console.log('%s hand found.', type);
-        var obj = type === 'left' ? 'horse' : 'flamingo';
-        $('#container').addObject(type, obj);
+    controller.on('handLost', function (hand) {
+        drawer.removeObject(hand.type);
     });
 
-    listener.on('handLost', function (hand, type) {
-        console.log('%s hand lost.', type);
-        $('#container').removeObject(type);
-    });
-
-    listener.setup();
-    listener.start();
+    controller.connect();
 });
