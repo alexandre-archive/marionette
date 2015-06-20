@@ -1,4 +1,9 @@
-Leap.Controller.plugin('frameExtras', function() {
+Leap.Controller.plugin('leapExtras', function() {
+
+    function radians2degrees(radians) {
+        return radians * (180 / Math.PI);
+    }
+
     return {
         frame: {
             getHandsCount: function () {
@@ -27,6 +32,20 @@ Leap.Controller.plugin('frameExtras', function() {
 
             getFrameRate: function () {
                 return this.currentFrameRate;
+            }
+        },
+
+        hand: {
+            pitchDegree: function () {
+                return radians2degrees(this.pitch());
+            },
+
+            rollDegree: function () {
+                return radians2degrees(this.roll());
+            },
+
+            yawDegree: function () {
+                return radians2degrees(this.yaw());
             }
         }
     };

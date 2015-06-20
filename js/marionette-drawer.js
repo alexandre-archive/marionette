@@ -3,8 +3,7 @@ function MarionetteDrawer() {
     this.addCube = addCube;
     this.animate = animate;
     this.moveObject = moveObject;
-    this.rotateObjectY = rotateObjectY;
-    this.rotateObjectX = rotateObjectX;
+    this.rotateObject = rotateObject;
     this.addHorse = addHorse;
     this.stop = stop;
     this.play = play;
@@ -126,8 +125,8 @@ function MarionetteDrawer() {
 
         var geometry = new THREE.PlaneGeometry(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, 10, 10);
         var scenario = new THREE.Mesh(geometry, material);
-        scenario.position.z = -400;
 
+        scenario.position.z = -400;
         scene.add(scenario);
     }
 
@@ -139,6 +138,7 @@ function MarionetteDrawer() {
                 color: 0x606060,
                 morphTargets: true
             }));
+
             horse.scale.set(0.8, 0.8, 0.8);
             scene.add(horse);
 
@@ -147,11 +147,6 @@ function MarionetteDrawer() {
             var animation = new THREE.MorphAnimation(horse);
             animation.play();
             animations[id] = animation;
-
-
-            /*var rotationMatrix = new THREE.Matrix4();
-            rotationMatrix.makeRotationY(calculateRad(90));
-            horse.applyMatrix(rotationMatrix);*/
         });
     }
 
@@ -170,10 +165,10 @@ function MarionetteDrawer() {
                 vertexColors: THREE.FaceColors,
                 shading: THREE.FlatShading
             });
+
             var meshAnim = new THREE.MorphAnimMesh(geometry, material);
 
             meshAnim.duration = 5000;
-
             meshAnim.scale.set(1.0, 1.0, 1.0);
             meshAnim.position.y = 200;
 
@@ -181,16 +176,11 @@ function MarionetteDrawer() {
             objects[id] = meshAnim;
             animations[id] = meshAnim;
 
-            /*var rotationMatrix = new THREE.Matrix4();
-            rotationMatrix.makeRotationY(calculateRad(90));
-            meshAnim.applyMatrix(rotationMatrix);*/
-
             meshAnim.position.setY(240);
         });
     }
 
     function morphColorsToFaceColors(geometry) {
-
         if (geometry.morphColors && geometry.morphColors.length) {
             var colorMap = geometry.morphColors[0];
 
@@ -203,7 +193,6 @@ function MarionetteDrawer() {
 
 
     function moveObject(id, x, y, z) {
-
         if (id in objects) {
             var obj = objects[id];
 
@@ -241,27 +230,16 @@ function MarionetteDrawer() {
         }
     }
 
-    function rotateObjectX(id, angle) {
+    function rotateObject(id, angleX, angleY, angleZ) {
         if (id in objects) {
             var obj = objects[id];
-
-            var rotationMatrixX = new THREE.Matrix4();
-            rotationMatrixX.makeRotationX(calculateRad(angle));
-            obj.applyMatrix(rotationMatrixX);
+            obj.rotation.x = toRadian(angleX);
+            obj.rotation.y = toRadian(angleY);
+            obj.rotation.z = toRadian(angleZ);
         }
     }
 
-    function rotateObjectY(id, angle) {
-        if (id in objects) {
-            var obj = objects[id];
-
-            var rotationMatrixY = new THREE.Matrix4();
-            rotationMatrixY.makeRotationY(calculateRad(angle));
-            obj.applyMatrix(rotationMatrixY);
-        }
-    }
-
-    function calculateRad(angle) {
+    function toRadian(angle) {
         return angle * Math.PI / 180;
     }
 
@@ -272,7 +250,6 @@ function MarionetteDrawer() {
     }
 
     function render() {
-        // TODO
         if (animations) {
             if (!stopped) {
                 var time = Date.now();
