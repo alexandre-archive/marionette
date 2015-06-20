@@ -25,7 +25,6 @@
   "dependencies": {
     "underscore-min": "http://underscorejs.org/underscore-min.js",
     "jquery-2.1.4.min": "http://code.jquery.com/jquery-2.1.4.min.js",
-    "klass.min": "https://raw.githubusercontent.com/ded/klass/master/klass.min.js",
     "leap-0.6.4.min": "http://js.leapmotion.com/leap-0.6.4.min.js",
     "leap-plugins-0.1.10.min": "http://js.leapmotion.com/leap-plugins-0.1.10.min.js",
     "three.min": "https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js",

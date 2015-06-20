@@ -1,53 +1,34 @@
+function moveObject(hand) {
+    if (hand && (hand.timeVisible > .25) && (hand.confidence > .7)) {
+        var p = hand.get3JsScreenPosition();
+        $('#container').moveObject(hand.type, p.x, p.y, p.z);
+    }
+}
+
 $(document).ready(function () {
     $("#container").start();
 
-    var listener = new LeapListener();
+    var controller = new Leap.Controller();
 
-    listener.on('connecting', function () {
+    controller.use('screenPosition')
+        .use('handEntry')
+        .use('threejsPosition')
+        .use('frameExtras');
+
+    controller.on('frame', function (frame) {
+        moveObject(frame.getLeftHand());
+        moveObject(frame.getRightHand());
     });
 
-    listener.on('connected', function () {
+    controller.on('handFound', function (hand) {
+        var obj = hand.type === 'left' ? 'horse' : 'flamingo';
+        $('#container').addObject(hand.type, obj);
+        moveObject(hand);
     });
 
-    listener.on('connectionTimedout', function () {
+    controller.on('handLost', function (hand) {
+        $('#container').removeObject(hand.type);
     });
 
-    listener.on('pause', function () {
-    });
-
-    listener.on('resume', function () {
-    });
-
-    listener.on('data', function (frameProcessor) {
-        if (frameProcessor == undefined) return;
-
-        var leftHand = frameProcessor.getLeftHand(),
-            rightHand = frameProcessor.getRightHand();
-
-        if (leftHand) {
-            console.log('Left hand moving...');
-            var p = frameProcessor.getScreenPosition(leftHand);
-            $('#container').moveObject('left', p.x, p.y, p.z);
-        }
-
-        if (rightHand) {
-            console.log('Right hand moving...');
-            var p = frameProcessor.getScreenPosition(rightHand);
-            $('#container').moveObject('right', p.x, p.y, p.z);
-        }
-    });
-
-    listener.on('handFound', function (hand, type) {
-        console.log('%s hand found.', type);
-        var obj = type === 'left' ? 'horse' : 'flamingo';
-        $('#container').addObject(type, obj);
-    });
-
-    listener.on('handLost', function (hand, type) {
-        console.log('%s hand lost.', type);
-        $('#container').removeObject(type);
-    });
-
-    listener.setup();
-    listener.start();
+    controller.connect();
 });

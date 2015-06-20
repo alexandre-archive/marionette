@@ -19,12 +19,11 @@ Required only for development, if you want to host, you can use Apache, PHP, Ngi
 ### Frontend
 
 - jQuery
-- Klass
 - LeapJS
-- Underscore
-- three.js
 - LeapJS Plugins
+- three.js
 - three.js Stats
+- Underscore
 
 ## Dev Setup
 
