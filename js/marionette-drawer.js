@@ -150,10 +150,17 @@ function MarionetteDrawer() {
 
             horse.scale.set(0.8, 0.8, 0.8);
 
-            horse.position.setX(x);
-            horse.position.setY(y);
-            horse.position.setZ(z);
+            if(x){
+                horse.position.setX(x);
+            }
 
+            if(y){
+                horse.position.setY(y);
+            }
+            
+            if(z){
+                horse.position.setZ(z);   
+            }
             // som
 
             var sound = new THREE.Audio( listener );
@@ -196,9 +203,17 @@ function MarionetteDrawer() {
             flamingo.duration = 5000;
             flamingo.scale.set(1.0, 1.0, 1.0);
             
-            flamingo.position.setX(x);
-            flamingo.position.setY(y);
-            flamingo.position.setZ(z);
+            if(x){
+                flamingo.position.setX(x);
+            }
+
+            if(y){
+                flamingo.position.setY(y);
+            }
+            
+            if(z){
+                flamingo.position.setZ(z);   
+            }
 
             
             // som
