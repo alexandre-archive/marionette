@@ -10,8 +10,9 @@ function MarionetteDrawer() {
     this.addFlamingo = addFlamingo;
     this.addScenario = addScenario;
     this.removeObject = removeObject;
+    this.addSound = addSound;
 
-    var container, scene, camera, renderer, stats, objects, animations;
+    var container, scene, camera, renderer, stats, objects, animations, listener;
     var SCREEN_WIDTH;
     var SCREEN_HEIGHT;
     var clock = new THREE.Clock();
@@ -31,7 +32,7 @@ function MarionetteDrawer() {
         SCREEN_WIDTH = window.innerWidth;
         SCREEN_HEIGHT = window.innerHeight;
 
-        // atributos da c√¢mera
+        // atributos da c‚mera
         var VIEW_ANGLE = 75,
             ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT,
             NEAR = 0.1,
@@ -40,7 +41,7 @@ function MarionetteDrawer() {
         // setup camera
         camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 
-        // adiciona a camera √† cena
+        // adiciona a camera ‡ cena
         scene.add(camera);
         camera.position.y = 0;
         camera.position.x = 0;
@@ -48,6 +49,12 @@ function MarionetteDrawer() {
         camera.target = new THREE.Vector3(0, 150, 0);
 
         camera.lookAt(scene.position);
+
+        //
+
+        listener = new THREE.AudioListener();
+        camera.add( listener );
+        //
 
         /* RENDERIZADOR */
 
@@ -127,10 +134,12 @@ function MarionetteDrawer() {
         var scenario = new THREE.Mesh(geometry, material);
 
         scenario.position.z = -400;
+        
         scene.add(scenario);
+
     }
 
-    function addHorse(id) {
+    function addHorse(id, x, y, z) {
         var loader = new THREE.JSONLoader(true);
         loader.load("models//horse.json", function(geometry) {
 
@@ -140,6 +149,29 @@ function MarionetteDrawer() {
             }));
 
             horse.scale.set(0.8, 0.8, 0.8);
+
+            if(x){
+                horse.position.setX(x);
+            }
+
+            if(y){
+                horse.position.setY(y);
+            }
+            
+            if(z){
+                horse.position.setZ(z);   
+            }
+            // som
+
+            var sound = new THREE.Audio( listener );
+            
+            sound.load( 'sounds/HORSE.mp3' );         
+            sound.setRefDistance( 20 );
+            sound.autoplay = true;
+            horse.add( sound );
+
+            //
+
             scene.add(horse);
 
             objects[id] = horse;
@@ -151,7 +183,7 @@ function MarionetteDrawer() {
     }
 
 
-    function addFlamingo(id) {
+    function addFlamingo(id, x, y, z) {
         var loader = new THREE.JSONLoader();
         loader.load("models/flamingo.json", function(geometry) {
 
@@ -166,18 +198,58 @@ function MarionetteDrawer() {
                 shading: THREE.FlatShading
             });
 
-            var meshAnim = new THREE.MorphAnimMesh(geometry, material);
+            var flamingo = new THREE.MorphAnimMesh(geometry, material);
 
-            meshAnim.duration = 5000;
-            meshAnim.scale.set(1.0, 1.0, 1.0);
-            meshAnim.position.y = 200;
+            flamingo.duration = 5000;
+            flamingo.scale.set(1.0, 1.0, 1.0);
+            
+            if(x){
+                flamingo.position.setX(x);
+            }
 
-            scene.add(meshAnim);
-            objects[id] = meshAnim;
-            animations[id] = meshAnim;
+            if(y){
+                flamingo.position.setY(y);
+            }
+            
+            if(z){
+                flamingo.position.setZ(z);   
+            }
 
-            meshAnim.position.setY(240);
+            
+            // som
+
+            var sound = new THREE.Audio( listener );
+            
+            sound.load( 'sounds/BIRD5.mp3' );         
+            sound.setRefDistance( 20 );
+            sound.autoplay = true;
+            flamingo.add( sound );
+
+            //
+
+
+            scene.add(flamingo);
+            objects[id] = flamingo;
+            animations[id] = flamingo;
+
+
         });
+    }
+
+    function addSound(soundPath){
+        
+        var sound = new THREE.Audio( listener );
+        
+        if(soundPath){
+            sound.load( soundPath );
+        }else{
+            sound.load( 'sounds/358232_j_s_song.ogg' );         
+        }
+        
+        sound.setRefDistance( 20 );
+        sound.autoplay = true;
+        scene.add( sound );
+        
     }
 
     function morphColorsToFaceColors(geometry) {
