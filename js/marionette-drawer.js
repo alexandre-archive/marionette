@@ -12,7 +12,7 @@ function MarionetteDrawer() {
     this.removeObject = removeObject;
     this.addSound = addSound;
 
-    var container, scene, camera, renderer, stats, objects, animations, listener;
+    var container, scene, camera, renderer, stats, objects, animations, listener, backgroundScene, backgroundCamera;
     var SCREEN_WIDTH;
     var SCREEN_HEIGHT;
     var clock = new THREE.Clock();
@@ -20,67 +20,63 @@ function MarionetteDrawer() {
     var stopped = false;
 
     function init(containerElement) {
-
-        container = containerElement;
         objects = {};
         animations = {};
-
-        /* CENA */
-        scene = new THREE.Scene();
-
-        /* CAMERA */
         SCREEN_WIDTH = window.innerWidth;
         SCREEN_HEIGHT = window.innerHeight;
 
-        // atributos da câmera
-        var VIEW_ANGLE = 75,
-            ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT,
-            NEAR = 0.1,
-            FAR = 1000;
-
-        // setup camera
-        camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-
-        // adiciona a camera à cena
-        scene.add(camera);
-        camera.position.y = 0;
-        camera.position.x = 0;
-        camera.position.z = 400;
-        camera.target = new THREE.Vector3(0, 150, 0);
-
-        camera.lookAt(scene.position);
-
-        //
-
-        listener = new THREE.AudioListener();
-        camera.add( listener );
-        //
-
-        /* RENDERIZADOR */
-
-        // cria e inicializa o renderizador.
+        scene = new THREE.Scene();
+        this.scene = scene;
         renderer = new THREE.WebGLRenderer({
+            alpha: true,
             antialias: true
         });
 
-        renderer.setClearColor(0xf0f0f0);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+        renderer.setClearColor(0x000000, 0);
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
-        container.appendChild(renderer.domElement);
+        renderer.domElement.style.position = 'fixed';
+        renderer.domElement.style.top = 0;
+        renderer.domElement.style.left = 0;
+        renderer.domElement.style.width = '100%';
+        renderer.domElement.style.height = '100%';
 
-        /* LUZ */
-        var light = new THREE.DirectionalLight(0xefefff, 2);
-        light.position.set(1, 1, 1).normalize();
-        scene.add(light);
+        document.body.appendChild(renderer.domElement);
 
-        var light = new THREE.DirectionalLight(0xffefef, 2);
-        light.position.set(-1, -1, -1).normalize();
-        scene.add(light);
+        var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+        directionalLight.position.set( 0, 0.5, 1 );
+        scene.add(directionalLight);
+
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+        /*camera.position.fromArray([0, 100, 500]);
+        camera.lookAt(new THREE.Vector3(0, 160, 0));*/
+
+        camera.position.set(0, 300, 500);
+        camera.lookAt(new THREE.Vector3(0, 160, 0));
+
+        listener = new THREE.AudioListener();
+        camera.add(listener);
+
+        window.addEventListener('resize', function() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.render(scene, camera);
+        }, false);
+
+        scene.add(camera);
+
+        /*var light1 = new THREE.DirectionalLight(0xefefff, 2);
+        light1.position.set(1, 1, 1).normalize();
+        scene.add(light1);
+
+        var light2 = new THREE.DirectionalLight(0xffefef, 2);
+        light2.position.set(-1, -1, -1).normalize();
+        scene.add(light2);*/
+
+        renderer.render(scene, camera);
 
         initStats();
-
-        window.addEventListener('resize', onWindowResize, false);
     }
 
     function removeObject(id) {
@@ -122,26 +118,42 @@ function MarionetteDrawer() {
     }
 
     function addScenario() {
-        var texture = new THREE.ImageUtils.loadTexture('images/country.png');
-        var material = new THREE.MeshBasicMaterial({
-            map: texture,
-            side: THREE.DoubleSide
+        var material = new THREE.MeshLambertMaterial({
+            map: THREE.ImageUtils.loadTexture('images/country.png')
         });
 
-        //var material = new THREE.MeshBasicMaterial( { color: 0x99D9EA, side: THREE.DoubleSide } );
+        var geometry = new THREE.PlaneBufferGeometry(SCREEN_WIDTH, SCREEN_HEIGHT);
+        var backgroundMesh = new THREE.Mesh(geometry, material);
 
-        var geometry = new THREE.PlaneGeometry(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, 10, 10);
-        var scenario = new THREE.Mesh(geometry, material);
+        backgroundMesh.material.depthTest = false;
+        backgroundMesh.material.depthWrite = false;
 
-        scenario.position.z = -400;
-        
-        scene.add(scenario);
+        backgroundScene = new THREE.Scene();
+        backgroundCamera = new THREE.Camera();
 
+        /*var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+        directionalLight.position.set( 0, 0.5, 1 );
+        backgroundScene.add(directionalLight);*/
+
+        var light1 = new THREE.DirectionalLight(0xefefff, 2);
+        light1.position.set(1, 1, 1).normalize();
+        backgroundScene.add(light1);
+
+        var light2 = new THREE.DirectionalLight(0xffefef, 2);
+        light2.position.set(-1, -1, -1).normalize();
+        backgroundScene.add(light2);
+
+        backgroundCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+        backgroundCamera.position.set(0, 300, 500);
+        backgroundCamera.lookAt(new THREE.Vector3(0, 160, 0));
+
+        backgroundScene.add(backgroundCamera);
+        backgroundScene.add(backgroundMesh);
     }
 
     function addHorse(id, x, y, z) {
         var loader = new THREE.JSONLoader(true);
-        loader.load("models//horse.json", function(geometry) {
+        loader.load("models/horse.json", function(geometry) {
 
             var horse = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({
                 color: 0x606060,
@@ -150,28 +162,24 @@ function MarionetteDrawer() {
 
             horse.scale.set(0.8, 0.8, 0.8);
 
-            if(x){
+            if (x) {
                 horse.position.setX(x);
             }
 
-            if(y){
+            if (y) {
                 horse.position.setY(y);
             }
-            
-            if(z){
-                horse.position.setZ(z);   
+
+            if (z) {
+                horse.position.setZ(z);
             }
-            // som
 
-            var sound = new THREE.Audio( listener );
-            
-            sound.load( 'sounds/HORSE.mp3' );         
-            sound.setRefDistance( 20 );
+            var sound = new THREE.Audio(listener);
+            sound.load('sounds/HORSE.mp3');
+            sound.setRefDistance(20);
             sound.autoplay = true;
-            horse.add( sound );
 
-            //
-
+            horse.add(sound);
             scene.add(horse);
 
             objects[id] = horse;
@@ -185,7 +193,7 @@ function MarionetteDrawer() {
 
     function addFlamingo(id, x, y, z) {
         var loader = new THREE.JSONLoader();
-        loader.load("models/flamingo.json", function(geometry) {
+        loader.load("models/flamingo.json ", function(geometry) {
 
             morphColorsToFaceColors(geometry);
             geometry.computeMorphNormals();
@@ -202,54 +210,52 @@ function MarionetteDrawer() {
 
             flamingo.duration = 5000;
             flamingo.scale.set(1.0, 1.0, 1.0);
-            
-            if(x){
+
+            if (x) {
                 flamingo.position.setX(x);
             }
 
-            if(y){
+            if (y) {
                 flamingo.position.setY(y);
             }
-            
-            if(z){
-                flamingo.position.setZ(z);   
+
+            if (z) {
+                flamingo.position.setZ(z);
             }
 
-            
-            // som
+            var rotationMatrix = new THREE.Matrix4();
+            rotationMatrix.makeRotationY(calculateRad(180));
+            flamingo.applyMatrix(rotationMatrix);
 
-            var sound = new THREE.Audio( listener );
-            
-            sound.load( 'sounds/BIRD5.mp3' );         
-            sound.setRefDistance( 20 );
+
+            var sound = new THREE.Audio(listener);
+            sound.load('sounds/BIRD5.mp3');
+            sound.setRefDistance(20);
             sound.autoplay = true;
-            flamingo.add( sound );
 
-            //
-
-
+            flamingo.add(sound);
             scene.add(flamingo);
+
             objects[id] = flamingo;
+
             animations[id] = flamingo;
-
-
         });
     }
 
-    function addSound(soundPath){
-        
-        var sound = new THREE.Audio( listener );
-        
-        if(soundPath){
-            sound.load( soundPath );
-        }else{
-            sound.load( 'sounds/358232_j_s_song.ogg' );         
+    function addSound(soundPath) {
+
+        var sound = new THREE.Audio(listener);
+
+        if (soundPath) {
+            sound.load(soundPath);
+        } else {
+            sound.load('sounds/358232_j_s_song.ogg');
         }
-        
-        sound.setRefDistance( 20 );
+
+        sound.setRefDistance(20);
         sound.autoplay = true;
-        scene.add( sound );
-        
+        scene.add(sound);
+
     }
 
     function morphColorsToFaceColors(geometry) {
@@ -263,14 +269,18 @@ function MarionetteDrawer() {
         }
     }
 
+    function calculateRad(angle) {
+        return angle * Math.PI / 180;
+    }
 
     function moveObject(id, x, y, z) {
         if (id in objects) {
             var obj = objects[id];
 
-            obj.position.setX(x);
             obj.position.setY(y);
+            obj.position.setX(x);
             obj.position.setZ(z);
+
         }
     }
 
@@ -312,7 +322,7 @@ function MarionetteDrawer() {
     }
 
     function toRadian(angle) {
-        return angle * Math.PI / 180;
+        return angle;
     }
 
     function animate() {
@@ -326,21 +336,23 @@ function MarionetteDrawer() {
             if (!stopped) {
                 var time = Date.now();
 
-                for (obj in animations) {
+                for (var obj in animations) {
                     if (animations[obj].update) {
                         animations[obj].update(time - prevTime);
                     } else {
                         animations[obj].updateAnimation(time - prevTime);
                     }
-                };
+                }
 
                 prevTime = time;
             }
         }
 
+        renderer.autoClear = false;
         renderer.clear();
 
         renderer.setViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        renderer.render(backgroundScene, backgroundCamera);
         renderer.render(scene, camera);
     }
 
@@ -353,7 +365,8 @@ function MarionetteDrawer() {
         stats.domElement.style.left = '0px';
         stats.domElement.style.top = '0px';
 
-        container.appendChild(stats.domElement);
+        //container.appendChild(stats.domElement);
+        document.body.appendChild(stats.domElement);
 
         return stats;
     }
