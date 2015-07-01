@@ -1,36 +1,53 @@
 function MarionetteDrawer() {
-    this.init = init;
-    this.addCube = addCube;
-    this.animate = animate;
-    this.moveObject = moveObject;
-    this.rotateObject = rotateObject;
-    this.addHorse = addHorse;
-    this.stop = stop;
-    this.play = play;
-    this.addFlamingo = addFlamingo;
-    this.addScenario = addScenario;
-    this.removeObject = removeObject;
-    this.addSound = addSound;
+    var objects = {},
+        animations = {},
+        stopped = false,
+        prevTime = Date.now(),
+        clock = new THREE.Clock()
+        _self = this;
 
-    var container, scene, camera, renderer, stats, objects, animations, listener, backgroundScene, backgroundCamera;
-    var SCREEN_WIDTH;
-    var SCREEN_HEIGHT;
-    var clock = new THREE.Clock();
-    var prevTime = Date.now();
-    var stopped = false;
+    function morphColorsToFaceColors(geometry) {
+        if (geometry.morphColors && geometry.morphColors.length) {
+            var colorMap = geometry.morphColors[0];
 
-    function init(containerElement) {
-        objects = {};
-        animations = {};
-        SCREEN_WIDTH = window.innerWidth;
-        SCREEN_HEIGHT = window.innerHeight;
+            for (var i = 0; i < colorMap.colors.length; i++) {
+                geometry.faces[i].color = colorMap.colors[i];
+                geometry.faces[i].color.offsetHSL(0, 0.3, 0);
+            }
+        }
+    }
 
-        scene = new THREE.Scene();
-        this.scene = scene;
-        renderer = new THREE.WebGLRenderer({
-            alpha: true,
-            antialias: true
-        });
+    function render() {
+        if (animations) {
+            if (!stopped) {
+                var time = Date.now();
+
+                for (var obj in animations) {
+                    if (animations[obj].update) {
+                        animations[obj].update(time - prevTime);
+                    } else {
+                        animations[obj].updateAnimation(time - prevTime);
+                    }
+                }
+
+                prevTime = time;
+            }
+        }
+
+        _self.renderer.autoClear = false;
+        _self.renderer.clear();
+
+        _self.renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
+        _self.renderer.render(_self.backgroundScene, _self.backgroundCamera);
+        _self.renderer.render(_self.scene, _self.camera);
+    }
+
+    this.setup = function () {
+        var scene = new THREE.Scene(),
+            renderer = new THREE.WebGLRenderer({
+                alpha: true,
+                antialias: true
+            });
 
         renderer.setClearColor(0x000000, 0);
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -43,11 +60,12 @@ function MarionetteDrawer() {
 
         document.body.appendChild(renderer.domElement);
 
-        var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-        directionalLight.position.set( 0, 0.5, 1 );
+        var directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(0, 0.5, 1);
         scene.add(directionalLight);
 
-        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+       var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+
         /*camera.position.fromArray([0, 100, 500]);
         camera.lookAt(new THREE.Vector3(0, 160, 0));*/
 
@@ -74,19 +92,56 @@ function MarionetteDrawer() {
         light2.position.set(-1, -1, -1).normalize();
         scene.add(light2);*/
 
-        renderer.render(scene, camera);
+        this.scene = scene;
+        this.renderer = renderer;
+        this.camera = camera;
+    };
 
-        initStats();
-    }
-
-    function removeObject(id) {
-        if (id in objects) {
-            var obj = objects[id];
-            scene.remove(obj);
+    this.setBackground = function (img) {
+        if (typeof img === 'undefined') {
+            img = 'images/country.png';
         }
-    }
 
-    function addCube(id) {
+        var material = new THREE.MeshLambertMaterial({
+            map: THREE.ImageUtils.loadTexture(img)
+        });
+
+        var geometry = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
+        var backgroundMesh = new THREE.Mesh(geometry, material);
+
+        backgroundMesh.material.depthTest = false;
+        backgroundMesh.material.depthWrite = false;
+
+        var backgroundScene = new THREE.Scene();
+        //backgroundCamera = new THREE.Camera();
+
+        /*var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+        directionalLight.position.set( 0, 0.5, 1 );
+        backgroundScene.add(directionalLight);*/
+
+        var light1 = new THREE.DirectionalLight(0xefefff, 2);
+        light1.position.set(1, 1, 1).normalize();
+        backgroundScene.add(light1);
+
+        var light2 = new THREE.DirectionalLight(0xffefef, 2);
+        light2.position.set(-1, -1, -1).normalize();
+        backgroundScene.add(light2);
+
+        var backgroundCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+        backgroundCamera.position.set(0, 300, 300);
+        backgroundCamera.lookAt(new THREE.Vector3(0, 160, 0));
+        // var backgroundCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+        // backgroundCamera.position.set(0, 300, 500);
+        // backgroundCamera.lookAt(new THREE.Vector3(0, 160, 0));
+
+        backgroundScene.add(backgroundCamera);
+        backgroundScene.add(backgroundMesh);
+
+        this.backgroundCamera = backgroundCamera;
+        this.backgroundScene = backgroundScene;
+    };
+
+    this.addCube = function (id) {
         // Create an array of materials to be used in a cube, one for each side
         var cubeMaterialArray = [];
         // order to add materials: x+,x-,y+,y-,z+,z-
@@ -108,50 +163,18 @@ function MarionetteDrawer() {
         cubeMaterialArray.push(new THREE.MeshBasicMaterial({
             color: 0x8833ff
         }));
+
         var cubeMaterials = new THREE.MeshFaceMaterial(cubeMaterialArray);
         var cubeGeometry = new THREE.CubeGeometry(100, 100, 100, 1, 1, 1);
+
         cube = new THREE.Mesh(cubeGeometry, cubeMaterials);
         cube.position.set(0, 0, 0);
-        scene.add(cube);
+        _self.scene.add(cube);
 
         objects[id] = cube;
-    }
+    };
 
-    function addScenario() {
-        var material = new THREE.MeshLambertMaterial({
-            map: THREE.ImageUtils.loadTexture('images/country.png')
-        });
-
-        var geometry = new THREE.PlaneBufferGeometry(SCREEN_WIDTH, SCREEN_HEIGHT);
-        var backgroundMesh = new THREE.Mesh(geometry, material);
-
-        backgroundMesh.material.depthTest = false;
-        backgroundMesh.material.depthWrite = false;
-
-        backgroundScene = new THREE.Scene();
-        backgroundCamera = new THREE.Camera();
-
-        /*var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-        directionalLight.position.set( 0, 0.5, 1 );
-        backgroundScene.add(directionalLight);*/
-
-        var light1 = new THREE.DirectionalLight(0xefefff, 2);
-        light1.position.set(1, 1, 1).normalize();
-        backgroundScene.add(light1);
-
-        var light2 = new THREE.DirectionalLight(0xffefef, 2);
-        light2.position.set(-1, -1, -1).normalize();
-        backgroundScene.add(light2);
-
-        backgroundCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-        backgroundCamera.position.set(0, 300, 500);
-        backgroundCamera.lookAt(new THREE.Vector3(0, 160, 0));
-
-        backgroundScene.add(backgroundCamera);
-        backgroundScene.add(backgroundMesh);
-    }
-
-    function addHorse(id, x, y, z) {
+    this.addHorse = function (id, x, y, z) {
         var loader = new THREE.JSONLoader(true);
         loader.load("models/horse.json", function(geometry) {
 
@@ -175,12 +198,12 @@ function MarionetteDrawer() {
             }
 
             var sound = new THREE.Audio(listener);
-            sound.load('sounds/HORSE.mp3');
+            sound.load('sounds/horse.mp3');
             sound.setRefDistance(20);
             sound.autoplay = true;
 
             horse.add(sound);
-            scene.add(horse);
+            _self.scene.add(horse);
 
             objects[id] = horse;
 
@@ -188,10 +211,9 @@ function MarionetteDrawer() {
             animation.play();
             animations[id] = animation;
         });
-    }
+    };
 
-
-    function addFlamingo(id, x, y, z) {
+    this.addFlamingo = function (id, x, y, z) {
         var loader = new THREE.JSONLoader();
         loader.load("models/flamingo.json ", function(geometry) {
 
@@ -223,18 +245,14 @@ function MarionetteDrawer() {
                 flamingo.position.setZ(z);
             }
 
-            var rotationMatrix = new THREE.Matrix4();
-            rotationMatrix.makeRotationY(calculateRad(180));
-            flamingo.applyMatrix(rotationMatrix);
-
-
             var sound = new THREE.Audio(listener);
-            sound.load('sounds/BIRD5.mp3');
+            sound.load('sounds/flamingo.mp3');
             sound.setRefDistance(20);
             sound.autoplay = true;
 
             flamingo.add(sound);
-            scene.add(flamingo);
+
+            _self.scene.add(flamingo);
 
             objects[id] = flamingo;
 
@@ -242,122 +260,45 @@ function MarionetteDrawer() {
         });
     }
 
-    function addSound(soundPath) {
-
-        var sound = new THREE.Audio(listener);
-
-        if (soundPath) {
-            sound.load(soundPath);
-        } else {
-            sound.load('sounds/358232_j_s_song.ogg');
-        }
-
-        sound.setRefDistance(20);
-        sound.autoplay = true;
-        scene.add(sound);
-
-    }
-
-    function morphColorsToFaceColors(geometry) {
-        if (geometry.morphColors && geometry.morphColors.length) {
-            var colorMap = geometry.morphColors[0];
-
-            for (var i = 0; i < colorMap.colors.length; i++) {
-                geometry.faces[i].color = colorMap.colors[i];
-                geometry.faces[i].color.offsetHSL(0, 0.3, 0);
-            }
-        }
-    }
-
-    function calculateRad(angle) {
-        return angle * Math.PI / 180;
-    }
-
-    function moveObject(id, x, y, z) {
+    this.removeObject = function (id) {
         if (id in objects) {
             var obj = objects[id];
+            _self.scene.remove(obj);
+        }
+    };
 
-            obj.position.setY(y);
+    this.moveObject = function (id, x, y, z) {
+        if (id in objects) {
+            var obj = objects[id];
             obj.position.setX(x);
+            obj.position.setY(y - obj.geometry.boundingSphere.radius);
             obj.position.setZ(z);
-
         }
-    }
+    };
 
-    function moveLeftHand(id, x, y, z) {
+    this.rotateObject = function (id, angleX, angleY, angleZ) {
         if (id in objects) {
             var obj = objects[id];
-            //TODO
+            obj.rotation.x = angleX;
+            obj.rotation.y = angleY;
+            obj.rotation.z = angleZ;
         }
-    }
+    };
 
-    function moveRightHand(id, x, y, z) {
-        if (id in objects) {
-            var obj = objects[id];
-            //TODO
-        }
-    }
-
-    function moveLeftLeg(id, x, y, z) {
-        if (id in objects) {
-            var obj = objects[id];
-            //TODO
-        }
-    }
-
-    function moveRightLeg(id, x, y, z) {
-        if (id in objects) {
-            var obj = objects[id];
-            //TODO
-        }
-    }
-
-    function rotateObject(id, angleX, angleY, angleZ) {
-        if (id in objects) {
-            var obj = objects[id];
-            obj.rotation.x = toRadian(angleX);
-            obj.rotation.y = toRadian(angleY);
-            obj.rotation.z = toRadian(angleZ);
-        }
-    }
-
-    function toRadian(angle) {
-        return angle;
-    }
-
-    function animate() {
-        requestAnimationFrame(animate);
+    this.animate = function () {
+        requestAnimationFrame(_self.animate);
         render();
-        stats.update();
-    }
 
-    function render() {
-        if (animations) {
-            if (!stopped) {
-                var time = Date.now();
-
-                for (var obj in animations) {
-                    if (animations[obj].update) {
-                        animations[obj].update(time - prevTime);
-                    } else {
-                        animations[obj].updateAnimation(time - prevTime);
-                    }
-                }
-
-                prevTime = time;
-            }
+        if (_self.stats) {
+            _self.stats.update();
         }
+    };
 
-        renderer.autoClear = false;
-        renderer.clear();
+    this.setupStats = function () {
+        var stats = new Stats();
 
-        renderer.setViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        renderer.render(backgroundScene, backgroundCamera);
-        renderer.render(scene, camera);
-    }
+        this.stats = stats;
 
-    function initStats() {
-        stats = new Stats();
         stats.setMode(0); // 0: fps, 1: ms
 
         // Align top-left
@@ -367,25 +308,13 @@ function MarionetteDrawer() {
 
         //container.appendChild(stats.domElement);
         document.body.appendChild(stats.domElement);
+    };
 
-        return stats;
-    }
-
-    function onWindowResize(event) {
-        SCREEN_WIDTH = window.innerWidth;
-        SCREEN_HEIGHT = window.innerHeight;
-
-        renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-
-        camera.aspect = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
-        camera.updateProjectionMatrix();
-    }
-
-    function stop() {
+    this.stop = function () {
         stopped = true;
-    }
+    };
 
-    function play() {
+    this.play = function () {
         stopped = false;
-    }
+    };
 }

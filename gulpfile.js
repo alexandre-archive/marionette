@@ -17,7 +17,6 @@ gulp.task('vendor', function() {
 gulp.task('main', function() {
     gulp.src([
             'js/leap-extras.js',
-            'js/threejs-position.js',
             'js/marionette-drawer.js',
             'js/app.js'
         ])
@@ -27,14 +26,10 @@ gulp.task('main', function() {
         .pipe(gulp.dest('dist/js'));
 });
 
-gulp.task('model', function() {
-    gulp.src(['models/*.json'])
-        .pipe(gulp.dest('dist/models'));
-});
-
-gulp.task('img', function() {
-    gulp.src(['images/*.png'])
-        .pipe(gulp.dest('dist/images'));
+gulp.task('cp', function() {
+    gulp.src(['models/*.json']).pipe(gulp.dest('dist/models'));
+    gulp.src(['images/*.png']).pipe(gulp.dest('dist/images'));
+    gulp.src(['sounds/*.mp3']).pipe(gulp.dest('dist/sounds'));
 });
 
 gulp.task('css', function() {
@@ -56,4 +51,4 @@ gulp.task('replace', function() {
 
 gulp.task('js', ['vendor', 'main']);
 
-gulp.task('default', ['js', 'css', 'replace', 'model', 'img']);
+gulp.task('default', ['js', 'css', 'replace', 'cp']);

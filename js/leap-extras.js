@@ -2,33 +2,13 @@ Leap.Controller.plugin('leapExtras', function() {
 
     return {
         frame: {
-            getHandsCount: function () {
-                return this.hands.length;
-            },
-
-            getFingersCount: function () {
-                return _.reduce(this.hands, function (memo, hand) {
-                    return memo + hand.fingers.length;
-                }, 0);
-            },
-
-            getExtendedFingersCount: function () {
-                return _.reduce(this.hands, function (memo, hand) {
-                    return memo + _.filter(hand.fingers, function (finger) { return finger.extended; }).length;
-                }, 0);
-            },
-
             getLeftHand: function () {
-                return _.findWhere(this.hands, { type: 'left' });
+                return $.grep(this.hands, function (hand){ return hand.type === 'left'; })[0];
             },
 
             getRightHand: function () {
-                return _.findWhere(this.hands, { type: 'right' });
+                return $.grep(this.hands, function (hand){ return hand.type === 'right' })[0];
             },
-
-            getFrameRate: function () {
-                return this.currentFrameRate;
-            }
         }
     };
 });
