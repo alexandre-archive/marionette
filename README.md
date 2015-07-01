@@ -23,7 +23,6 @@ Required only for development, if you want to host, you can use Apache, PHP, Ngi
 - LeapJS Plugins
 - three.js
 - three.js Stats
-- Underscore
 
 ## Dev Setup
 
