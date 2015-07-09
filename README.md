@@ -2,6 +2,8 @@
 
 Marionette game using Leap Motion Controller
 
+[![img1](http://img.youtube.com/vi/s4VwsRK7D2c/1.jpg)](https://www.youtube.com/watch?v=s4VwsRK7D2c) [![img2](http://img.youtube.com/vi/s4VwsRK7D2c/2.jpg)](https://www.youtube.com/watch?v=s4VwsRK7D2c) [![img3](http://img.youtube.com/vi/s4VwsRK7D2c/3.jpg)](https://www.youtube.com/watch?v=s4VwsRK7D2c)
+
 ## Requirements
 
 ### Hardware
